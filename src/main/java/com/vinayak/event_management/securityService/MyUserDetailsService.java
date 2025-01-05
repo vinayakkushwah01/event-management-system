@@ -1,4 +1,4 @@
-package com.vinayak.event_management.service;
+package com.vinayak.event_management.securityService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

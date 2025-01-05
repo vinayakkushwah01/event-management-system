@@ -1,4 +1,5 @@
-// package com.vinayak.event_management.service;
+package com.vinayak.event_management.securityService;
+ //package com.vinayak.event_management.service;
 
 // import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 // import org.springframework.mail.SimpleMailMessage;
@@ -11,7 +12,7 @@
 
 // public class AuthService {
 //     private UserRepository userRepository;
-//     private RoleRepository roleRepository;
+//     private RoleRepository roleRepository;""
 //     private OtpRepository otpRepository;
 //     private JwtTokenProvider jwtTokenProvider;
 //     private BCryptPasswordEncoder bCryptPasswordEncoder;
