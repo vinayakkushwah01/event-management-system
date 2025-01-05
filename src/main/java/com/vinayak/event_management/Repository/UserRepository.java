@@ -1,4 +1,4 @@
-package com.vinayak.event_management.Repository;
+package com.vinayak.event_management.repository;
 
 import java.util.Optional;
 
@@ -10,5 +10,5 @@ import com.vinayak.event_management.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
-    Optional<User> findByEmail(String email); 
+    User findByEmail(String email); 
 }
