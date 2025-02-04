@@ -2,6 +2,8 @@ package com.vinayak.event_management.entity;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,30 +16,52 @@ import lombok.Data;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long eventId;
+    private Long eventId;
 
 
-    String eName;
-    String eDiscription;
-    String eLocation;
+    private String eName;
+    private String eDiscription;
+    private String eLocation;
+    private String createdBy;
 
-    LocalDateTime eStarDateTime;
-    LocalDateTime eEndDateTime;
 
-    Double ePrice;
-    String ePaymentModel;
-    String status;
+    private LocalDateTime eStarDateTime;
+    private LocalDateTime eEndDateTime;
 
-    int eTotalSeat;
-    int eAvailableSeat;
+    private Double ePrice;
+    private String ePaymentModel;
+    private String status;
 
-     HashMap<Integer, Long> seatHashMap = new HashMap<>();
-     void initialize(){
+    private int eTotalSeat;
+    private int eAvailableSeat;
+
+    private HashMap<Integer, Long> seatHashMap = new HashMap<>();
+    
+    public  void initialize(){
         for(int i = 1; i<= this.eTotalSeat; i++){
             seatHashMap.put(i, null);
         }
      }
+
+
+    public Event  assignSeatValue(int key, Long value) {
+        if (seatHashMap.containsKey(key)) {
+            seatHashMap.put(key, value);
+
+            this.setEAvailableSeat(this.getEAvailableSeat()-1);
+            return this;
+        } else {
+            return null;
+        }
+    }
      
+    public List<Integer> getNullSeatKeys() {
+        return seatHashMap.entrySet()
+                          .stream()
+                          .filter(entry -> entry.getValue() == null)
+                          .map(entry -> entry.getKey())
+                          .collect(Collectors.toList());
+    }
      
     
 }
