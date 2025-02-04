@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-public class BasicController {
+public class UserController {
     @GetMapping("/")
     public String home(HttpServletRequest request){
         return "ok Login"+request.getSession().getId();
