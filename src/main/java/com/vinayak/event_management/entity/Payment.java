@@ -14,13 +14,14 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long pId;
+    private Long pId;
+
     @NotNull
-    Long pTransactionId;
+    private Long pTransactionId;
     @Min(0)
-    double pAmount;
+    private double pAmount;
     @NotNull
-    String pMethod;
-    String pStatus;
+    private String pMethod;
+    private String pStatus;
 
 }
