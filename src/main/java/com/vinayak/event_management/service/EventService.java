@@ -1,5 +1,5 @@
-package com.vinayak.event_management.service;
-
+ package com.vinayak.event_management.service;
+/*
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,23 +53,23 @@ public class EventService {
          return eventDtos;
     }
 
-    EventGetDto getEventDto(long id){
+    public EventGetDto getEventDto(long id){
         Event e = eventRepository.findById(id).get();
         return mapToEventGetDto(e);
     }
 
-    Event getEvent(long id){
+    public Event getEvent(long id){
         Event e = eventRepository.findById(id).get();
         return (e);
     }
 
-    List<EventGetDto> getAllEventDto(){
+    public List<EventGetDto> getAllEventDto(){
         List <Event> events = eventRepository.findAll();
         return mapEventListToEventDtoList(events);
     }
 
 
-    Event createEvent(EventPostDto postEvent){
+    public Event createEvent(EventPostDto postEvent){
 
         Event e = new Event();
         e.setEName(postEvent.getEventName());
@@ -88,33 +88,34 @@ public class EventService {
         e.setStatus( postEvent.getEventStatus());
 
         e.initialize();
-        return e;
+        
+        return eventRepository.save(e);
     }
 
-    List<EventGetDto> getMyEvents(){
+    public List<EventGetDto> getMyEvents(){
        List<Event> e=  eventRepository.findByCreatedBy( userService.getCurrentUserUsername());
        return mapEventListToEventDtoList(e);
         
     }
 
 
-    List<EventGetDto> getEventsByAvilableSeat(){
-        List<Event> e = eventRepository.findByEAvailableSeatGreaterThan((Integer)0);
+    public List<EventGetDto> getEventsByAvilableSeat(){
+        List<Event> e = eventRepository.findByeAvailableSeatGreaterThan((Integer)0);
         return mapEventListToEventDtoList(e);
     }
 
-    List<EventGetDto> getEventsByAvilableDate(){
+    public List<EventGetDto> getEventsByAvilableDate(){
         LocalDateTime currentDateTime = LocalDateTime.now();
-        List<Event> e = eventRepository.findByEStarDateTimeGreaterThanEqual(currentDateTime);
+        List<Event> e = eventRepository.findByeStarDateTimeGreaterThanEqual(currentDateTime);
         return mapEventListToEventDtoList(e);
     }
 
-    List<EventGetDto> getEventsByPaymentModel(String paymentModel){
-        List<Event> e= eventRepository.findByEPaymentModel(paymentModel.toUpperCase());
+    public List<EventGetDto> getEventsByPaymentModel(String paymentModel){
+        List<Event> e= eventRepository.findByePaymentModel(paymentModel.toUpperCase());
         return mapEventListToEventDtoList(e);
     }
 
-    Event updateSeatvalue(Long eventId ,int key , Long bookingId){
+    public Event updateSeatvalue(Long eventId ,int key , Long bookingId){
       Event e =  getEvent(eventId).assignSeatValue(key, bookingId);
         return eventRepository.save(e);
     };
@@ -123,4 +124,142 @@ public class EventService {
 
 
 
+}
+ */
+
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.vinayak.event_management.dto.EventGetDto;
+import com.vinayak.event_management.dto.EventPostDto;
+import com.vinayak.event_management.entity.Event;
+import com.vinayak.event_management.entity.SeatData;
+import com.vinayak.event_management.repository.EventRepository;
+import com.vinayak.event_management.repository.SeatDataRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class EventService {
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private SeatDataRepository seatDataRepository;
+
+    @Autowired
+    private UserService userService;
+
+    public EventGetDto mapToEventGetDto(Event event) {
+        EventGetDto eventDto = new EventGetDto();
+
+        eventDto.setEventId(event.getEventId());
+        eventDto.setEventName(event.getEName());
+        eventDto.setEventDiscription(event.getEDiscription());
+        eventDto.setEventLocation(event.getELocation());
+        eventDto.setEventStatus(event.getStatus());
+        eventDto.setEventCreatedBy(event.getCreatedBy());
+        eventDto.setEventStarDateTime(event.getEStarDateTime());
+        eventDto.setEventEndDateTime(event.getEEndDateTime());
+        eventDto.setEventPrice(event.getEPrice());
+        eventDto.setEventPaymentModel(event.getEPaymentModel());
+        eventDto.setEventTotalSeat(event.getETotalSeat());
+        eventDto.setEventAvailableSeat(event.getEAvailableSeat());
+        
+        List<Integer> availableSeats = seatDataRepository.findByEventIdAndSeatValueIsNull(event.getEventId())
+                                                         .stream()
+                                                         .map(SeatData::getSeatKey)
+                                                         .collect(Collectors.toList());
+        eventDto.setAvilableSeatNo(availableSeats);
+
+        return eventDto;
+    }
+
+    public List<EventGetDto> mapEventListToEventDtoList(List<Event> events) {
+        return events.stream()
+                     .map(this::mapToEventGetDto)
+                     .collect(Collectors.toList());
+    }
+
+    public EventGetDto getEventDto(long id) {
+        Event event = eventRepository.findById(id).orElseThrow();
+        return mapToEventGetDto(event);
+    }
+
+    public Event getEvent(long id) {
+        return eventRepository.findById(id).orElseThrow();
+    }
+
+    public List<EventGetDto> getAllEventDto() {
+        List<Event> events = eventRepository.findAll();
+        return mapEventListToEventDtoList(events);
+    }
+
+    public Event createEvent(EventPostDto postEvent) {
+        Event event = new Event();
+        event.setEName(postEvent.getEventName());
+        event.setEDiscription(postEvent.getEventDiscription());
+        event.setELocation(postEvent.getEventLocation());
+        event.setCreatedBy(userService.getCurrentUserUsername());
+        event.setEStarDateTime(postEvent.getEventStarDateTime());
+        event.setEEndDateTime(postEvent.getEventEndDateTime());
+        event.setETotalSeat(postEvent.getEventTotalSeat());
+        event.setEAvailableSeat(postEvent.getEventTotalSeat());
+        event.setEPrice(postEvent.getEventPrice());
+        event.setEPaymentModel(postEvent.getEventPaymentModel().toUpperCase());
+        event.setStatus(postEvent.getEventStatus());
+        
+        Event savedEvent = eventRepository.save(event);
+
+        // Initialize seat data entries
+        for (int i = 1; i <= postEvent.getEventTotalSeat(); i++) {
+            SeatData seatData = new SeatData();
+            seatData.setEventId(savedEvent.getEventId());
+            seatData.setSeatKey(i);
+            seatData.setSeatValue(null);
+            seatDataRepository.save(seatData);
+        }
+
+        return savedEvent;
+    }
+
+    public List<EventGetDto> getMyEvents() {
+        List<Event> events = eventRepository.findByCreatedBy(userService.getCurrentUserUsername());
+        return mapEventListToEventDtoList(events);
+    }
+
+    public List<EventGetDto> getEventsByAvailableSeat() {
+        List<Long> eventIds = seatDataRepository.findDistinctEventIdBySeatValueIsNull();
+        List<Event> events = eventRepository.findAllById(eventIds);
+        return mapEventListToEventDtoList(events);
+    }
+
+    public List<EventGetDto> getEventsByAvailableDate() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        List<Event> events = eventRepository.findByeStarDateTimeGreaterThanEqual(currentDateTime);
+        return mapEventListToEventDtoList(events);
+    }
+
+    public List<EventGetDto> getEventsByPaymentModel(String paymentModel) {
+        List<Event> events = eventRepository.findByePaymentModel(paymentModel.toUpperCase());
+        return mapEventListToEventDtoList(events);
+    }
+
+    public Event updateSeatValue(Long eventId, int key, Long bookingId) {
+        SeatData seatData = seatDataRepository.findByEventIdAndSeatKey(eventId, key)
+                                              .orElseThrow(() -> new IllegalArgumentException("Seat not found"));
+
+        seatData.setSeatValue(bookingId);
+        seatDataRepository.save(seatData);
+
+        Event event = eventRepository.findById(eventId).orElseThrow();
+        event.setEAvailableSeat(event.getEAvailableSeat() - 1);
+        return eventRepository.save(event);
+    }
 }

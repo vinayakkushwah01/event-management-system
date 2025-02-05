@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @Repository
 public interface BookingRepository  extends JpaRepository <Booking, Long>{
         List<Booking> findByUser(User user);
-        List<Booking> findByBInfo(String bInfo);
+        List<Booking> findBybInfo(String bInfo);
         List<Booking> findByEvent(Event event);
-        List<Booking> findByBDateTime(LocalDateTime bDateTime);
+        List<Booking> findBybDateTime(LocalDateTime bDateTime);
 
 }

@@ -41,7 +41,7 @@ public class SecurityConfig {
         http.csrf(customizer -> customizer.disable());// desable CSRF 
         
         http.authorizeHttpRequests(request -> request
-                        .requestMatchers("login","register")// req like this wer dont require Authentication 
+                        .requestMatchers("login","register","/")// req like this wer dont require Authentication 
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("Admin")
                         .requestMatchers("/user/**").hasAnyRole("Admin", "User")

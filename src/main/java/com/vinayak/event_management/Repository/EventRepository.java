@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>  {
-    List<Event> findByEPaymentModel(String ePaymentModel);
-    List<Event> findByEStarDateTimeGreaterThanEqual(LocalDateTime eStarDateTime);
-    List<Event> findByEAvailableSeatGreaterThan(int eAvailableSeat);
+    List<Event> findByePaymentModel(String ePaymentModel);
+    List<Event> findByeStarDateTimeGreaterThanEqual(LocalDateTime eStarDateTime);
+    List<Event> findByeAvailableSeatGreaterThan(int eAvailableSeat);
     List<Event> findByCreatedBy(String createdBy);
 }
